@@ -1,5 +1,4 @@
 import streamlit as st
-from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -115,7 +114,6 @@ def clear_chat():
 
 # Main function to define Streamlit interface
 def main():
-    load_dotenv()
     st.set_page_config(page_title="Personal Document Chatbot", page_icon=":robot:", layout="wide")
 
     st.markdown(css, unsafe_allow_html=True)
@@ -129,23 +127,28 @@ def main():
 
     st.header("Personal Document Chatbot 🤖")
 
-    # Display uploaded documents
-    if "uploaded_files" in st.session_state:
-        st.subheader("Uploaded Documents")
-        for uploaded_file in st.session_state.uploaded_files:
-            st.write(f"- {uploaded_file.name}")
-    else:
-        st.session_state.uploaded_files = []
-
-    user_question = st.text_input("Ask a question about your documents:")
-
-    if user_question:
-        handle_user_question(user_question)
-        st.button("Clear Chat", on_click=clear_chat)
-
+    # Sidebar for API Token and customization
     with st.sidebar:
+        st.subheader("Configuration")
+
+        # Secure input for HuggingFace API Token
+        hf_api_token = st.text_input(
+            "HuggingFace API Token",
+            type="password",
+            help="Enter your HuggingFace API token to access models."
+        )
+
+        if hf_api_token:
+            os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_token
+        else:
+            st.warning("Please enter your HuggingFace API token to proceed.")
+
+        st.markdown("-----")
+
+        # Display uploaded documents
         st.subheader("Your Documents")
         pdf_docs = st.file_uploader("Upload your PDFs here", accept_multiple_files=True, type=["pdf"])
+
         st.markdown("""
             <style>
             .stButton > button {
@@ -153,7 +156,12 @@ def main():
             }
             </style>
             """, unsafe_allow_html=True)
+
         if st.button("Process"):
+            if not hf_api_token:
+                st.error("HuggingFace API token is required to process documents.")
+                return
+
             if pdf_docs:
                 with st.spinner("Processing..."):
                     # Display uploaded document names
@@ -222,6 +230,10 @@ def main():
 
             if st.button("Apply Settings"):
                 if st.session_state.conversation:
+                    if not hf_api_token:
+                        st.error("HuggingFace API token is required to apply settings.")
+                        return
+
                     embeddings = load_embeddings(model_name=model_name)
                     if embeddings is None:
                         st.error("Failed to load embeddings model.")
@@ -235,6 +247,20 @@ def main():
                     st.success("Settings applied successfully!")
                 else:
                     st.warning("Process documents first before applying settings.")
+
+    # Display uploaded documents in the main area
+    if "uploaded_files" in st.session_state:
+        st.subheader("Uploaded Documents")
+        for uploaded_file in st.session_state.uploaded_files:
+            st.write(f"- {uploaded_file.name}")
+    else:
+        st.session_state.uploaded_files = []
+
+    user_question = st.text_input("Ask a question about your documents:")
+
+    if user_question:
+        handle_user_question(user_question)
+        st.button("Clear Chat", on_click=clear_chat)
 
 # Run the Streamlit app
 if __name__ == "__main__":
