@@ -197,7 +197,7 @@ def main():
                             return
 
                         # Load LLM
-                        llm = load_llm(repo_id="meta-llama/Llama-3.1-70B", temperature=0.7, max_length=512)
+                        llm = load_llm(repo_id="meta-llama/Llama-3.2-3B", temperature=0.7, max_length=512)
                         if llm is None:
                             return
 
@@ -215,7 +215,7 @@ def main():
         st.markdown("-----")
         st.subheader("Customization")
         with st.expander("Advanced Settings"):
-            repo_id = st.text_input("Language Model Repo ID", value="meta-llama/Llama-3.2-1B")
+            repo_id = st.text_input("Language Model Repo ID", value="meta-llama/Llama-3.2-3B")
             temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1)
             max_length = st.number_input("Max Response Length", min_value=100, max_value=2048, value=512)
             model_name = st.selectbox("Embeddings Model", options=["hkunlp/instructor-xl", "all-MiniLM-L6-v2"])
