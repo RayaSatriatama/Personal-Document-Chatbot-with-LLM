@@ -1,29 +1,31 @@
 # Personal-Document-Chatbot 🤖
 
-Welcome to the **Personal Document Chatbot**! This project provides a chatbot interface where you can upload PDF documents and ask questions about the content. The chatbot uses powerful language models and vector embeddings to retrieve information from your documents, making it a useful tool for processing large amounts of text quickly.
+The **Personal Document Chatbot** allows you to upload PDF documents, process their content, and interact with a chatbot that can answer questions based on the uploaded documents. The chatbot leverages Hugging Face language models and FAISS for vector-based information retrieval.
+
+[Personal Document Chatbot](https://personal-document-chatbot-with-llm.streamlit.app/)
 
 ## Features
 
-- 📄 **PDF Document Upload**: Upload multiple PDF files.
-- 🔍 **Text Extraction**: Extracts text from uploaded PDFs.
-- 🧠 **Conversational Interface**: Ask questions about the content of your PDFs and get AI-generated responses.
-- 🗂️ **Vector Store for Text Retrieval**: Uses FAISS to create vector embeddings of the text chunks for efficient retrieval.
-- 🔄 **Session Memory**: The chatbot retains the chat history during the session, allowing for context-based interactions.
-- ⚙️ **Customizable Settings**: Modify the language model, response length, and temperature according to your preferences.
+- 📄 **PDF Document Upload**: Upload multiple PDF documents.
+- 🧠 **Conversational Interface**: Ask questions about the documents and receive intelligent responses.
+- 🔍 **Text Extraction**: Extracts and processes text from the uploaded PDFs.
+- 🔄 **Chat Memory**: Retains conversation history during the session for context-based answers.
+- 🧬 **Customizable AI Settings**: Adjust the language model, temperature, response length, and embeddings model to your needs.
+- 🗂️ **Efficient Vector Search**: Uses FAISS for fast similarity searches on document content.
 
 ## Disclaimer
 
-⚠️ **Hugging Face API Limitations**:
-This project uses models from Hugging Face, which may be subject to API usage limits depending on your account type. Free-tier users of Hugging Face may experience restrictions in terms of request limits, rate limits, or model availability. If you encounter errors related to API requests, consider upgrading your Hugging Face account or monitoring your API usage closely.
+⚠️ **Hugging Face API Limitations**: This project uses Hugging Face models, which may have usage limits depending on your account type. Free-tier accounts may face API rate limits or request restrictions. Ensure you have a valid Hugging Face API token to use the chatbot.
 
 ## Installation
 
-Follow these steps to set up the project locally:
+To set up the project locally, follow these steps:
 
 ### Prerequisites
 
 - Python 3.8+
 - [pip](https://pip.pypa.io/en/stable/) (Python package installer)
+- Hugging Face API token (sign up at [Hugging Face](https://huggingface.co/) if you don't have one)
 
 ### Steps
 
@@ -38,7 +40,7 @@ Follow these steps to set up the project locally:
 
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. Install the dependencies:
@@ -49,11 +51,13 @@ Follow these steps to set up the project locally:
 
 4. Set up environment variables:
 
-   - Create a `.env` file in the root directory and add your Hugging Face API key (if required):
+   You can either use a `.env` file or directly enter your Hugging Face API token into the application via the sidebar.
 
-     ```bash
-     HUGGINGFACEHUB_API_TOKEN=your_token_here
-     ```
+   To use a `.env` file, create it in the root directory and add:
+
+   ```bash
+   HUGGINGFACEHUB_API_TOKEN=your_token_here
+   ```
 
 5. Run the application:
 
@@ -61,23 +65,27 @@ Follow these steps to set up the project locally:
    streamlit run app.py
    ```
 
-   Open your browser and go to `http://localhost:8501` to see the chatbot interface.
+   Open your browser and navigate to `http://localhost:8501` to interact with the chatbot.
 
 ## Usage
 
-1. **Upload PDFs**: Use the file uploader on the sidebar to upload one or multiple PDF documents.
+1. **Upload PDFs**: Use the file uploader in the sidebar to upload one or more PDF documents.
 2. **Process Documents**: Once uploaded, click the "Process" button to extract and process the text.
-3. **Ask Questions**: Type your questions in the input field, and the chatbot will respond based on the content of the uploaded PDFs.
+3. **Ask Questions**: Type your question in the input field and the chatbot will provide answers based on the document content.
 4. **Clear Chat**: Use the "Clear Chat" button to reset the conversation.
+
+### Hugging Face API Token
+
+To use the chatbot, you must provide a valid Hugging Face API token. You can enter it directly into the app through the sidebar. Without this token, the chatbot will not function as it relies on models hosted by Hugging Face.
 
 ## Customization
 
-You can adjust the behavior of the chatbot by changing the following settings in the sidebar:
+You can customize the chatbot's behavior using the following options in the sidebar:
 
-- **Language Model Repo ID**: Select or input a different language model from Hugging Face.
-- **Temperature**: Control the randomness of the AI’s responses (higher values give more creative responses).
-- **Max Response Length**: Set the maximum length of the chatbot’s responses.
-- **Embeddings Model**: Choose between different embedding models for vector store creation.
+- **Language Model Repo ID**: Choose or input a Hugging Face model ID.
+- **Temperature**: Adjust the creativity of the responses (higher values lead to more random responses).
+- **Max Response Length**: Set the maximum token length for responses.
+- **Embeddings Model**: Select an embeddings model for vector-based retrieval, such as `all-MiniLM-L6-v2` or `hkunlp/instructor-xl`.
 
 ## Project Structure
 
@@ -86,16 +94,17 @@ You can adjust the behavior of the chatbot by changing the following settings in
 ├── app.py               # Main application file
 ├── htmlTemplates.py      # HTML templates for the chatbot interface
 ├── requirements.txt      # Python dependencies
-├── .env                  # Environment variables
+├── .env                  # Environment variables (optional)
 └── README.md             # Project documentation
 ```
 
 ## Built With
 
-- [Streamlit](https://streamlit.io/) - Web app framework for the UI
+- [Streamlit](https://streamlit.io/) - Web framework for creating the UI
 - [Langchain](https://github.com/hwchase17/langchain) - Framework for building language model applications
-- [PyPDF2](https://pypdf2.readthedocs.io/en/stable/) - Library for extracting text from PDFs
-- [FAISS](https://github.com/facebookresearch/faiss) - Library for efficient similarity search and clustering of dense vectors
+- [PyPDF2](https://pypdf2.readthedocs.io/en/stable/) - PDF text extraction library
+- [FAISS](https://github.com/facebookresearch/faiss) - Vector search and clustering library
+- [Hugging Face](https://huggingface.co/) - Platform providing language models and embeddings
 
 ## Contributing
 
@@ -114,10 +123,6 @@ Contributions are welcome! If you find any issues or have suggestions for improv
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contact
-
-For any questions or inquiries, you can reach me at [your-email@example.com].
-
 ---
 
-Enjoy chatting with your documents! 🚀
+Enjoy using the **Personal Document Chatbot** to interact with your documents! 🚀
