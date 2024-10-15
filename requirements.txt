@@ -5,6 +5,7 @@ langchain_text_splitters==0.3.0
 PyPDF2==3.0.1
 python-dotenv==1.0.1
 streamlit==1.39.0
-faiss-cpu==1.7.4
+faiss-cpu
+tiktoken
 altair==4
 InstructorEmbedding==1.0.1
