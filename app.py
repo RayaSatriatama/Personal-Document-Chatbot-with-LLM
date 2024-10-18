@@ -10,6 +10,7 @@ from langchain_community.llms import HuggingFaceHub
 import os
 import tempfile
 import logging
+import re
 
 # Configure logging for better error tracking
 logging.basicConfig(level=logging.INFO)
@@ -95,14 +96,29 @@ def handle_user_question(user_question):
     else:
         try:
             with st.spinner("Generating response..."):
+                # Send the question to the conversation chain
                 response = st.session_state.conversation({"question": user_question})
-            st.session_state.chat_history = response.get("chat_history", [])
+                logger.info(f"Raw response: {response}")
 
-            for i, message in enumerate(st.session_state.chat_history):
-                if i % 2 == 0:
-                    st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            # Extract the answer from the response
+            raw_answer = response.get("chat_history", [])
+            if raw_answer:
+                # Assuming the last message is from the bot
+                last_message = raw_answer[-1].content
+                # Use regex to extract text after "Answer:"
+                match = re.search(r"Answer:\s*(.*)", last_message, re.DOTALL)
+                if match:
+                    extracted_answer = match.group(1).strip()
                 else:
-                    st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+                    # Fallback if "Answer:" is not found
+                    extracted_answer = last_message.strip()
+            else:
+                extracted_answer = "No response from the model."
+
+            # Display the extracted answer using the bot template
+            st.write(bot_template.replace("{{MSG}}", extracted_answer), unsafe_allow_html=True)
+            st.session_state.chat_history.append({"role": "bot", "content": extracted_answer})
+
         except Exception as e:
             logger.error(f"Error handling user question: {e}")
             st.error("An error occurred while processing your question. Please try again.")
