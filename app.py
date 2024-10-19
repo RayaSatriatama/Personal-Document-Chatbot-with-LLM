@@ -104,9 +104,13 @@ def get_conversation_chain(vector_store, llm):
 
 # Handle user's question and generate a response synchronously
 def handle_user_question(user_question):
+
     if st.session_state.conversation is None:
         st.error("Please upload and process your documents before asking a question.")
         return
+
+    # Add user's question to the chat history immediately
+    st.session_state.chat_history.append({"role": "user", "content": user_question})
 
     # Start generating response
     st.session_state.is_generating_response = True
@@ -125,24 +129,19 @@ def handle_user_question(user_question):
             last_message = raw_chat_history[-1].content.strip()
 
             # Since we can't enforce the LLM to output only the answer, we handle extraction here
-            # Example: If the response starts with "Answer:", extract after it
             match = re.search(r"Answer:\s*(.*)", last_message, re.DOTALL | re.IGNORECASE)
             if match:
                 extracted_answer = match.group(1).strip()
             else:
-                # Fallback if "Answer:" is not found
                 extracted_answer = last_message
 
             # Clean any unwanted trailing characters (e.g., non-ASCII characters)
             extracted_answer = re.sub(r'[^\x00-\x7F]+', '', extracted_answer)
 
-            # Display the extracted answer using the bot template
-            st.write(bot_template.replace("{{MSG}}", extracted_answer), unsafe_allow_html=True)
+            # Append the bot's response to chat history
             st.session_state.chat_history.append({"role": "bot", "content": extracted_answer})
-
         else:
             extracted_answer = "No response from the model."
-            st.write(bot_template.replace("{{MSG}}", extracted_answer), unsafe_allow_html=True)
             st.session_state.chat_history.append({"role": "bot", "content": extracted_answer})
 
     except Exception as e:
@@ -359,9 +358,6 @@ def main():
 
     st.header("Personal Document Chatbot 🤖")
 
-    # Render the sidebar
-    render_sidebar(st.session_state.is_generating_response)
-
     # Main Content Area
     st.subheader("Chat History")
     for chat in st.session_state.chat_history:
@@ -386,6 +382,8 @@ def main():
 
         cancel_button = st.button("Cancel Response", on_click=handle_cancel)
 
+    # Render the sidebar
+    render_sidebar(st.session_state.is_generating_response)
 
     # Clear Chat Button
     if st.button("Clear Chat"):
